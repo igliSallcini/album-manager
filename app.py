@@ -34,7 +34,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(50), unique=True, nullable=False)
-    password = db.Column(db.String(100), unique = True, nullable=False)
+    password = db.Column(db.String(100), nullable=False)
 
     def __init__(self, username, email, password):
         self.username = username
@@ -94,19 +94,20 @@ def register():
                     session['is_logged_in'] = True
                     session['username'] = username
                     session['email'] = email
-                    return redirect(url_for("admin/dashboard.html"))
+                    return redirect(url_for('dashboard'))
+                
                 else:
                     flash("Password doesn't match!")
             else:
                 flash("Email is not valid!")
         else:
             flash("All fields are required")
-        return redirect (url_for("auth/register.html"))
+        return redirect (url_for('register'))
     return render_template("auth/register.html")
 
 @app.route ("/dashboard")
 def dashboard():
-    return None
+    return render_template("admin/dashboard.html")
 
 @app.route("/albums", methods = ["GET", "POST"])
 def album():

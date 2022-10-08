@@ -74,7 +74,31 @@ def home():
 
 @app.route ("/login", methods = ["GET", "POST"])
 def login():
-    return render_template("auth/login.html")
+    if request.method == "POST":
+        email = request.form['email']
+        password = request.form['password']
+        if not_empty([email, password ]):
+            if is_email(email):
+                user = User.query.filter_by(email=email).first()
+                if user:
+                    if bcrypt.check_password_hash(user.password, password):
+                        session['is_logged_in'] = True                        
+                        session['email'] = email
+                        return redirect(url_for('dashboard'))
+                    else:
+                        flash("Password is incorrect")
+                else:
+                    flash("User doesn't exist!")
+                               
+            else:
+                flash("Email is not valid!")
+        else:
+            flash("All fields are required")
+        return redirect (url_for('login'))
+    else:
+        if session['is_logged_in'] == True:
+            return redirect(url_for('dashboard'))
+        return render_template("auth/login.html")
 
 @app.route ("/register", methods = ["GET", "POST"])
 def register():
@@ -87,7 +111,8 @@ def register():
             if is_email(email):
 
                 if password_match(password, confirm_password):
-                    user = User(username, email, password)
+                    password_hash = bcrypt.generate_password_hash(password)
+                    user = User(username, email, password_hash)
                     db.session.add(user)
                     db.session.commit()
                     # create session 3 items (we will need these in dashboard/albums/photos)

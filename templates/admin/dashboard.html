@@ -12,10 +12,21 @@
     <div class="container my-5">
         <h3>Dashboard | Online Album Manager</h3>
         <p> 
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor, totam natus pariatur iure sapiente porro nam aliquid enim et! Eveniet, aspernatur! Repudiandae eius, magni itaque voluptatem modi in at velit? 
+
+            <i class="fa fa-user"></i>
+            {{session.get("username")}} 
+            |
+            {{session.get("email")}}
+            |
+            <a href="{{url_for('loggout')}}">
+                <i class="fa fa-sign-out"> Log Out </i>
+            </a>
         </p>
         <a href="" class="btn btn-sm btn-outline-primary mr=2">
             <i class="fa fa-plus"></i>Add new album
+        </a>
+        <a href="" class="btn btn-sm btn-outline-primary mr=2">
+            <i class="fa fa-plus"></i>Sign Out
         </a>
         <!-- <a href="" class="btn btn-sm btn-primary">
             <i class="fa fa-user-circle"></i>Add new photo</a> -->

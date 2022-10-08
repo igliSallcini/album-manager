@@ -107,11 +107,20 @@ def register():
 
 @app.route ("/dashboard")
 def dashboard():
+    if session['is_logged_in'] == False:
+        return render_template("not_allowed.html")
     return render_template("admin/dashboard.html")
 
 @app.route("/albums", methods = ["GET", "POST"])
 def album():
     return None
+
+@app.route("/loggout", methods = ["GET", "POST"])
+def loggout():
+    session['username'] = ""
+    session['email'] = ""
+    session['is_logged_in'] = False
+    return redirect(url_for('home'))
 
 @app.route("/photos/<int:album_id>", methods = ["GET", "POST"])
 def photo():

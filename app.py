@@ -82,7 +82,8 @@ def login():
                 user = User.query.filter_by(email=email).first()
                 if user:
                     if bcrypt.check_password_hash(user.password, password):
-                        session['is_logged_in'] = True                        
+                        session['is_logged_in'] = True
+                        session['username'] = user.username                        
                         session['email'] = email
                         return redirect(url_for('dashboard'))
                     else:
@@ -127,8 +128,10 @@ def register():
                 flash("Email is not valid!")
         else:
             flash("All fields are required")
-        return redirect (url_for('register'))
-    return render_template("auth/register.html")
+    else:
+        if session['is_logged_in']==True:
+            return redirect (url_for('dashboard'))
+        return render_template("auth/register.html")
 
 @app.route ("/dashboard")
 def dashboard():
@@ -138,7 +141,14 @@ def dashboard():
 
 @app.route("/albums", methods = ["GET", "POST"])
 def album():
-    return None
+    if session['is_logged_in'] == True:
+        albums = Album.query.all()
+        if request.method == "POST":
+            pass
+            return render_template("admin/albums.html", albums=albums)
+        else:
+            return redirect(url_for('home'))
+
 
 @app.route("/loggout", methods = ["GET", "POST"])
 def loggout():

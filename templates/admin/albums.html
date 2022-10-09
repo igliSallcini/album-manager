@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Album | Online Album Manager</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.2/css/fontawesome.min.css">
+</head>
+<body>
+    <div class="container my-5">
+        <h3>Album | Online Album Manager</h3>
+        <p> 
+
+            <i class="fa fa-user"></i>
+            {{session.get('username')}} 
+            |
+            {{session.get('email')}}
+            |
+            <a href="{{url_for('loggout')}}">
+                <i class="fa fa-sign-out"> Log Out </i>
+            </a>
+        </p>
+        <a href="" class="btn btn-sm btn-outline-primary mr=2">
+            <i class="fa fa-plus"></i>Add new album
+        </a>
+        <div class="my-4">
+            {% if len(albums)>0 %}
+            {% else %}
+                <div class="alert alert-info">
+                    No Album was added yet!
+                </div>
+            {% endif %}
+        </div>
+        <!-- <a href="" class="btn btn-sm btn-outline-primary mr=2">
+            <i class="fa fa-plus"></i>Sign Out
+        </a> -->
+        <!-- <a href="" class="btn btn-sm btn-primary">
+            <i class="fa fa-user-circle"></i>Add new photo</a> -->
+    </div>
+</body>
+</html>

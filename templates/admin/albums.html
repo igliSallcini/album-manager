@@ -10,34 +10,85 @@
 </head>
 <body>
     <div class="container my-5">
-        <h3>Album | Online Album Manager</h3>
-        <p> 
-
-            <i class="fa fa-user"></i>
-            {{session.get('username')}} 
-            |
-            {{session.get('email')}}
-            |
-            <a href="{{url_for('loggout')}}">
-                <i class="fa fa-sign-out"> Log Out </i>
-            </a>
-        </p>
+        <div class="row"><h3>Album | Online Album Manager</h3>
+        </div>
+        <div class="col-md-6">
+            <p class="float-right">
+                <i class="fa fa-user"></i>
+                {{session.get('username')}} 
+                |
+                {{session.get('email')}}
+                |
+                <a href="{{url_for('loggout')}}">
+                    <i class="fa fa-sign-out"></i> 
+                        Log Out 
+                </a>
+            </p>
+        </div> 
+            
         <a href="" class="btn btn-sm btn-outline-primary mr=2">
             <i class="fa fa-plus"></i>Add new album
         </a>
         <div class="my-4">
-            {% if len(albums)>0 %}
+            {% with messages = get_flashed_messages()%}
+                                {% if messages %}
+                                    <div class="alert alert-info">
+                                    {% for message in messages %}
+                                        {{ message }}
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+            <div class="card">
+                <div class="card-body">
+                    <form action="{{ url_for('album')}}" method="POST">
+                        <div class="form-group">
+                            <label for="title">Album Title</label>
+                            <input type="text" name="title" id="title" class="form-control"/>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-sm btn-outline-primary mr=2">Create Album</button>
+                            </div>
+                        </div>
+        
+                    </form>
+                </div>
+            </div>
+
+        </div>
+        <div class="my-4">
+            {% if albums %}
+                <div class="table-respansive">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th></th>
+                        </tr>
+                        {% for album in albums %}
+                        <tr>
+                            <td>{{album.id}}</td>
+                            <td>{{album.title}}</td>
+                            <td>
+                            <a href="{{url_for('photos', album_id=album.id) }}"class="btn btn-sm btn-outline-primary mr=2" title="Add photo">
+                                <i class="fa fa-plus"></i>
+                                Add Photo
+                            </a>
+                            <a href="{{url_for('delete_album', album_id=album.id)}}" class="btn btn-sm btn-outline-danger mr=2"onclick="return confirm('Are You Sure?');" title="Delete album">
+                                <i class="fa fa-close"></i>
+                                Delete Album
+                            </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+
+                </div>
             {% else %}
                 <div class="alert alert-info">
                     No Album was added yet!
                 </div>
             {% endif %}
-        </div>
-        <!-- <a href="" class="btn btn-sm btn-outline-primary mr=2">
-            <i class="fa fa-plus"></i>Sign Out
-        </a> -->
-        <!-- <a href="" class="btn btn-sm btn-primary">
-            <i class="fa fa-user-circle"></i>Add new photo</a> -->
+        </div>        
     </div>
 </body>
 </html>

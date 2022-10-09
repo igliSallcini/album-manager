@@ -83,7 +83,8 @@ def login():
                 if user:
                     if bcrypt.check_password_hash(user.password, password):
                         session['is_logged_in'] = True
-                        session['username'] = user.username                        
+                        session['username'] = user.username
+                        session['user_id'] = user.id                        
                         session['email'] = email
                         return redirect(url_for('dashboard'))
                     else:
@@ -144,10 +145,24 @@ def album():
     if session['is_logged_in'] == True:
         albums = Album.query.all()
         if request.method == "POST":
-            pass
-            return render_template("admin/albums.html", albums=albums)
-        else:
-            return redirect(url_for('home'))
+            title = request.form['title']
+            album = Album(title, session.get('user_id'))
+            db.session.add(album)
+            db.session.commit()
+            flash("Album was created successfully!")
+            return redirect(url_for('album'))
+        return render_template("admin/albums.html", albums=albums)
+    else:
+        return redirect(url_for("home"))
+
+@app.route("/album/<int:album_id>/delete")
+def delete_album(album_id):
+    album=Album.query.get_or_404(album_id)
+    db.session.delete(album)
+    db.session.commit()
+    flash("Album was deleted successfully!")
+    return redirect (url_for('album'))
+
 
 
 @app.route("/loggout", methods = ["GET", "POST"])
@@ -158,8 +173,16 @@ def loggout():
     return redirect(url_for('home'))
 
 @app.route("/photos/<int:album_id>", methods = ["GET", "POST"])
-def photo():
-    return None
+def photos(album_id):
+    if session['is_logged_in'] == True:
+        album = Album.query.get_or_404(album_id)
+        photos = Photo.query.filter_by(album_id=album.id).all()
+        if request.method == "POST":
+            # upload photos
+            pass
+        return render_template("admin/photos.html", photos=photos, album=album)
+    else:
+        return redirect(url_for("home"))
 
 def not_empty(form_fields):
     for field in form_fields:

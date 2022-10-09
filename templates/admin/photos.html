@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Albums {{albums}}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.2/css/fontawesome.min.css">
+</head>
+<body>
+    <div class="container my-5">
+        <div class="row"><h3>Albums "{{ album.title }}"</h3>
+        </div>
+        <div class="col-md-6">
+            <p class="float-right">
+                <i class="fa fa-user"></i>
+                {{session.get('username')}} 
+                |
+                {{session.get('email')}}
+                |
+                <a href="{{url_for('loggout')}}">
+                    <i class="fa fa-sign-out"></i> 
+                        Log Out 
+                </a>
+            </p>
+        </div> 
+            
+        <a href="" class="btn btn-sm btn-outline-primary mr=2">
+            <i class="fa fa-plus"></i>Add new album
+        </a>
+        <div class="my-4">
+            {% with messages = get_flashed_messages()%}
+                                {% if messages %}
+                                    <div class="alert alert-info">
+                                    {% for message in messages %}
+                                        {{ message }}
+                                    {% endfor %}
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+            <div class="card">
+                <div class="card-body">
+                    <form action="{{ url_for('photos', album_id=album.id)}}" method="POST">
+                        <div class="form-group">
+                            <label for="title">Photo Title</label>
+                            <input type="text" name="title" id="title" class="form-control"/>
+                        </div>    
+                        <div class="form-group">
+                            <label for="photo">Upload Photos</label>
+                            <input type="file" name="photo" id="photo" />
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-sm btn-outline-primary mr=2">Create</button>
+                        </div>
+        
+                    </form>
+                </div>
+            </div>
+
+        </div>
+        <div class="my-4">
+            {% if photos %}
+                <div class="table-respansive">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th></th>
+                        </tr>
+                        {% for photo in photos %}
+                        <tr>
+                            <td>{{photo.id}}</td>
+                            <td>{{photo.title}}</td>
+                            <td>
+                            <a href=""class="btn btn-sm btn-outline-primary mr=2" title="Add photo">
+                                <i class="fa fa-plus"></i>
+                                Add Photo
+                            </a>
+                            <a href="" class="btn btn-sm btn-outline-danger mr=2"onclick="return confirm('Are You Sure?');" title="Delete album">
+                                <i class="fa fa-close"></i>
+                                Delete Album
+                            </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    No Album was added yet!
+                </div>
+            {% endif %}
+        </div>        
+    </div>
+</body>
+</html>

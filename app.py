@@ -4,6 +4,7 @@ from flask import Flask, render_template, url_for, redirect, request, flash, ses
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from os.path import dirname, join, realpath
+# from werkzeug.urls import secure_filename
 import re
 
 # from macpath import realpath
@@ -59,10 +60,12 @@ class Album(db.Model):
 class Photo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title =db.Column(db.String(50), nullable=False)
-    album_id = db.Column(db.Integer, nullable=False)
+    photo =db.Column(db.String(120), nullable=False)
+    album_id =db.Column(db.Integer, nullable=False)
     
-    def __init__(self, title, album_id):
+    def __init__(self, title, photo, album_id):
         self.title = title
+        self.photo = photo
         self.album_id = album_id
         
     def __repr__(self):
@@ -145,12 +148,15 @@ def album():
     if session['is_logged_in'] == True:
         albums = Album.query.all()
         if request.method == "POST":
-            title = request.form['title']
-            album = Album(title, session.get('user_id'))
-            db.session.add(album)
-            db.session.commit()
-            flash("Album was created successfully!")
-            return redirect(url_for('album'))
+            if not_empty (['title']):
+                title = request.form['title']
+                album = Album(title, session.get('user_id'))
+                db.session.add(album)
+                db.session.commit()
+                flash("Album was created successfully!")
+            else:
+                flash('Album title cannot be empty')
+                return redirect(url_for('album'))
         return render_template("admin/albums.html", albums=albums)
     else:
         return redirect(url_for("home"))
@@ -179,7 +185,20 @@ def photos(album_id):
         photos = Photo.query.filter_by(album_id=album.id).all()
         if request.method == "POST":
             # upload photos
-            pass
+            title = request.form['title']
+            file = request.files['photo']
+            if file and allowed_file(file.filename):
+            
+                #upload ne database
+                # filename = secure_filename(file.filename)
+                # file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+                #save
+                photo = Photo(title, file.filename, album_id)
+                db.session.add(photo)
+                db.commit()
+                return redirect( url_for('photo', album_id=album_id))
+
         return render_template("admin/photos.html", photos=photos, album=album)
     else:
         return redirect(url_for("home"))
@@ -196,6 +215,10 @@ def is_email(email):
 
 def password_match(password, confirm_password):
     return password == confirm_password
+
+def allowed_file(filename):
+    ext = filename.split('.')[-1]
+    return ext in ALLOWED_EXTENSIONS
 
 if __name__ == '__main__':
     app.run (debug=True)
